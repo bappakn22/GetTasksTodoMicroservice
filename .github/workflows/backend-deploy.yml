@@ -1,0 +1,82 @@
+name: Todo Frontend Deploy
+
+on:
+  workflow_dispatch: 
+
+permissions: 
+  id-token: write
+  contents: read
+  
+env:
+  IMAGE_NAME: todo_frontend
+  IMAGE_TAG: v1
+  ACR_NAME: acrtodoappbappa
+  ACR_LOGIN_SERVER: acrtodoappbappa.azurecr.io
+  
+jobs:
+  azure-login-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v7
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+      - name: check azure commands
+        run: |
+          az account show
+          az account show --output table
+          az acr show --name ${{ENV.ACR_NAME}} --output table
+          az acr show --name ${{ENV.ACR_NAME}} --query loginServer --output tsv
+          az role assignment list --assignee 99540b96-fa8e-43ae-a229-7eb2aea8f9fa --all --include-inherited --output table
+
+      - name: Login to ACR
+        run: |
+          az acr login --name ${{ENV.ACR_NAME}}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{env.ACR_LOGIN_SERVER}}/${{env.IMAGE_NAME}}:${{env.IMAGE_TAG}} .
+
+      - name: Push Docker Image to ACR
+        run: |
+          docker push ${{env.ACR_LOGIN_SERVER}}/${{env.IMAGE_NAME}}:${{env.IMAGE_TAG}}
+
+      - name: Get AKS Credentials
+        run: |
+          az aks get-credentials --resource-group jaydeep_rg1 --name jaydeep-aks-cluster --overwrite-existing
+    
+      - name: Check AKS
+        run: |
+          kubectl get nodes
+
+      - name: Deploy frontend to AKS
+        run: |
+          kubectl apply -f manifest/1.namespaces.yml
+          kubectl apply -f manifest/2.deployment.yaml
+          kubectl apply -f manifest/3.service.yml
+          kubectl apply -f manifest/4.firfox.yaml
+          kubectl apply -f manifest/5.stgclass.yaml
+          kubectl apply -f manifest/6.pvc.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+    
