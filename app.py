@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Fetch the connection string from the environment variable
+Driver={ODBC Driver 18 for SQL Server};Server=tcp:jaydeep-sql-server.database.windows.net,1433;Database=jaydeep-sql-database;Uid=jaydeepc1985;Pwd=Oneday@321;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;
 connection_string = os.environ.get('CONNECTION_STRING')
 
 # Check if the connection string is available
