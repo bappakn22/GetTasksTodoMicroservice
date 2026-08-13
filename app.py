@@ -7,7 +7,7 @@ import os
 
 # Fetch the connection string from the environment variable
 
-connection_string = Driver={ODBC Driver 18 for SQL Server};Server=tcp:jaydeep-sql-server.database.windows.net,1433;Database=jaydeep-sql-database;Uid=jaydeepc1985;Pwd=Oneday@321;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;
+connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:jaydeep-sql-server.database.windows.net,1433;Database=jaydeep-sql-database;Uid=jaydeepc1985;Pwd=Oneday@321;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
 
 # Check if the connection string is available
 if connection_string:

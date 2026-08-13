@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata: 
+  namespace: todo-app
+  name: todo-frontend
+
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1 
+
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: todo-frontend
+
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+
+    spec:
+      containers:
+        - name: todo-frontend
+          image: acrtodoappbappa.azurecr.io/todo_frontend:v1
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+
+          ports: 
+            - containerPort: 80
+
+          volumeMounts: 
+            - name: todoui-storage
+              mountPath: /data
+              
+      volumes: # if use persistant volume then have to deploy storage class and pvc before then add here
+        - name: todoui-storage
+          persistentVolumeClaim: 
+            claimName: stgclass-todopvc
+
+            
